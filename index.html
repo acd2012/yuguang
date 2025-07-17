@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>余光恐惧症专业测评系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f9fc 0%, #e3edf7 100%);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(90deg, #4c6ef5 0%, #3b5bdb 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+        
+        header p {
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .stat-item {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .progress-container {
+            background: #e0e7ff;
+            height: 8px;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: #4c6ef5;
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+        
+        .test-container, .user-form-container, .payment-container {
+            padding: 30px;
+            min-height: 400px;
+        }
+        
+        .question {
+            margin-bottom: 30px;
+            padding: 25px;
+            border-radius: 12px;
+            background: #f8fafd;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid #4c6ef5;
+            transition: transform 0.3s ease;
+        }
+        
+        .question:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .question h3 {
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            line-height: 1.5;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 15px;
+        }
+        
+        .option {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .option:before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: #e2e8f0;
+            transition: width 0.3s ease;
+        }
+        
+        .option:hover {
+            background: #f0f5ff;
+            border-color: #a3bffa;
+        }
+        
+        .option:hover:before {
+            width: 100%;
+            opacity: 0.1;
+        }
+        
+        .option.selected {
+            background: #4c6ef5;
+            color: white;
+            border-color: #4c6ef5;
+            box-shadow: 0 4px 10px rgba(76, 110, 245, 0.3);
+        }
+        
+        .option.selected:before {
+            background: #3b5bdb;
+            width: 100%;
+            opacity: 0.3;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 30px 30px;
+        }
+        
+        button {
+            background: linear-gradient(90deg, #4c6ef5 0%, #3b5bdb 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        button:after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: 0.5s;
+        }
+        
+        button:hover:after {
+            left: 100%;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 110, 245, 0.4);
+        }
+        
+        button:disabled {
+            background: #c5cae9;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            opacity: 0.7;
+        }
+        
+        #result, #payment, #userForm {
+            padding: 40px;
+        }
+        
+        .result-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.8s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .score-display {
+            font-size: 4rem;
+            font-weight: 800;
+            color: #4c6ef5;
+            margin: 20px 0;
+            text-shadow: 0 3px 6px rgba(76, 110, 245, 0.2);
+        }
+        
+        .interpretation {
+            font-size: 1.2rem;
+            margin: 20px 0;
+            line-height: 1.8;
+            color: #2d3748;
+            padding: 0 20px;
+        }
+        
+        .recommendation {
+            background: #f0f5ff;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 25px 0;
+            text-align: left;
+            position: relative;
+        }
+        
+        .recommendation:before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: #4c6ef5;
+            border-radius: 5px 0 0 5px;
+        }
+        
+        .question-counter {
+            text-align: center;
+            font-size: 1.1rem;
+            color: #4c6ef5;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .alert-message {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ffebee;
+            color: #f44336;
+            padding: 12px 25px;
+            border-radius: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: none;
+            z-index: 1000;
+            animation: fadeInOut 3s ease;
+        }
+        
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0; transform: translate(-50%, -20px); }
+            10%, 90% { opacity: 1; transform: translate(-50%, 0); }
+        }
+        
+        .restart-btn {
+            background: linear-gradient(90deg, #e64a19 0%, #f57c00 100%);
+            margin-top: 20px;
+        }
+        
+        .info-icon {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            background: #4c6ef5;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 24px;
+            margin-right: 8px;
+            font-size: 14px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus {
+            border-color: #4c6ef5;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(76, 110, 245, 0.2);
+        }
+        
+        .payment-box {
+            background: #f8fafd;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .payment-header {
+            margin-bottom: 25px;
+        }
+        
+        .payment-header h2 {
+            color: #3b5bdb;
+            margin-bottom: 10px;
+        }
+        
+        .payment-amount {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #e64a19;
+            margin: 20px 0;
+        }
+        
+        .payment-options {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .payment-option {
+            width: 120px;
+            height: 70px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .payment-option.selected {
+            border-color: #4c6ef5;
+            background: #f0f5ff;
+            box-shadow: 0 4px 10px rgba(76, 110, 245, 0.2);
+        }
+        
+        .payment-option i {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+        
+        .wechat i {
+            color: #2aae67;
+        }
+        
+        .alipay i {
+            color: #1677ff;
+        }
+        
+        .payment-btn {
+            background: linear-gradient(90deg, #2aae67 0%, #1e8e4d 100%);
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1rem;
+        }
+        
+        .payment-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(42, 174, 103, 0.3);
+        }
+        
+        .test-locked {
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .lock-icon {
+            font-size: 5rem;
+            color: #4c6ef5;
+            margin-bottom: 20px;
+        }
+        
+        .test-locked h2 {
+            margin-bottom: 20px;
+            color: #2d3748;
+        }
+        
+        .test-locked p {
+            margin-bottom: 30px;
+            color: #4a5568;
+            font-size: 1.1rem;
+            line-height: 1.7;
+        }
+        
+        /* 新增结果分析样式 */
+        .analysis-section {
+            background: #fff;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid #4c6ef5;
+            text-align: left;
+        }
+        
+        .analysis-section h3 {
+            color: #3b5bdb;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .analysis-section h3 i {
+            font-size: 1.5rem;
+        }
+        
+        .book-recommendation {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .book-card {
+            background: #f8fafd;
+            border-radius: 10px;
+            padding: 15px;
+            width: calc(50% - 10px);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+        
+        .book-title {
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+        
+        .book-author {
+            color: #718096;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        
+        .book-desc {
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        
+        .therapy-steps {
+            margin: 15px 0;
+            padding-left: 20px;
+        }
+        
+        .therapy-steps li {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+        
+        @media (max-width: 600px) {
+            header {
+                padding: 20px;
+            }
+            
+            header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .test-container, .user-form-container, .payment-container {
+                padding: 20px;
+            }
+            
+            .question {
+                padding: 20px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                gap: 15px;
+                padding: 0 20px 20px;
+            }
+            
+            button {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .score-display {
+                font-size: 3rem;
+            }
+            
+            .interpretation {
+                font-size: 1.1rem;
+            }
+            
+            .payment-options {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .payment-option {
+                width: 100%;
+                max-width: 200px;
+            }
+            
+            .book-card {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="alert-message" id="alertMessage">
+        请选择答案
+    </div>
+    
+    <div class="container">
+        <header>
+            <h1>余光恐惧症专业测评系统</h1>
+            <p>专业心理测评 · 科学数据分析 · 个性化建议</p>
+            
+            <div class="stats">
+                <div class="stat-item">测试时间: 约8分钟</div>
+                <div class="stat-item">31道专业题目</div>
+                <div class="stat-item">权威结果分析</div>
+            </div>
+        </header>
+        
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        
+        <!-- 用户信息表单 -->
+        <div class="user-form-container" id="userForm">
+            <div class="payment-box">
+                <div class="payment-header">
+                    <h2>开始专业心理测评</h2>
+                    <p>请填写基本信息以开始测试</p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="nickname"><i class="fas fa-user"></i> 昵称</label>
+                    <input type="text" id="nickname" placeholder="请输入您的昵称">
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone"><i class="fas fa-phone"></i> 电话</label>
+                    <input type="tel" id="phone" placeholder="请输入您的手机号码">
+                </div>
+                
+                <div class="form-group">
+                    <label for="qq"><i class="fab fa-qq"></i> QQ号</label>
+                    <input type="text" id="qq" placeholder="请输入您的QQ号码">
+                </div>
+                
+                <button id="startTestBtn">
+                    <i class="fas fa-play-circle"></i> 开始测试
+                </button>
+            </div>
+        </div>
+        
+        <!-- 测试部分 -->
+        <div class="test-container" id="testContainer" style="display:none">
+            <div class="question-counter">
+                <span class="info-icon">i</span>
+                第 <span id="currentQ">1</span> 题 / 共 31 题
+            </div>
+            <!-- 问题将通过JS动态生成 -->
+        </div>
+        
+        <div class="controls" id="testControls" style="display:none">
+            <button id="prevBtn" disabled>
+                <i class="fas fa-arrow-left"></i> 上一题
+            </button>
+            <button id="nextBtn">
+                下一题 <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+        
+        <!-- 支付部分 -->
+        <div class="payment-container" id="payment" style="display:none">
+            <div class="payment-box">
+                <div class="payment-header">
+                    <h2>获取专业测评报告</h2>
+                    <p>支付后即可查看详细分析结果</p>
+                </div>
+                
+                <div class="payment-amount">
+                    <i class="fas fa-tag"></i> 5.00元
+                </div>
+                
+                <div class="payment-options">
+                    <div class="payment-option wechat selected" data-method="wechat">
+                        <i class="fab fa-weixin"></i>
+                        <span>微信支付</span>
+                    </div>
+                    <div class="payment-option alipay" data-method="alipay">
+                        <i class="fab fa-alipay"></i>
+                        <span>支付宝</span>
+                    </div>
+                </div>
+                
+                <div class="user-info-summary">
+                    <p><i class="fas fa-user"></i> 昵称: <span id="summaryNickname"></span></p>
+                    <p><i class="fas fa-phone"></i> 电话: <span id="summaryPhone"></span></p>
+                    <p><i class="fab fa-qq"></i> QQ: <span id="summaryQQ"></span></p>
+                </div>
+                
+                <button class="payment-btn" id="payBtn">
+                    <i class="fas fa-lock"></i> 立即支付
+                </button>
+                
+                <p style="margin-top: 20px; color: #718096; font-size: 0.9rem;">
+                    <i class="fas fa-shield-alt"></i> 支付安全保证，所有数据加密传输
+                </p>
+            </div>
+        </div>
+        
+        <!-- 结果部分 -->
+        <div id="result" style="display:none">
+            <div class="result-card">
+                <h2>测评结果分析</h2>
+                <div class="score-display" id="totalScore">0</div>
+                <div class="interpretation" id="interpretation"></div>
+                
+                <div class="recommendation" id="recommendation"></div>
+                
+                <!-- 详细分析部分 -->
+                <div id="detailedAnalysis"></div>
+                
+                <div class="user-info-summary" style="margin: 20px 0; padding: 15px; background: #f8fafd; border-radius: 10px;">
+                    <h3><i class="fas fa-user-circle"></i> 用户信息</h3>
+                    <p>昵称: <span id="resultNickname"></span></p>
+                    <p>电话: <span id="resultPhone"></span></p>
+                    <p>QQ: <span id="resultQQ"></span></p>
+                </div>
+                
+                <button class="restart-btn" onclick="location.reload()">
+                    <i class="fas fa-redo"></i> 重新测试
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 问题数据
+        const questions = [
+            {
+                text: "你是否非常担心别人会注意到你的眼神，比如觉得您眼神飘忽、怪异或不礼貌？",
+                options: [
+                    { text: "偶尔", weight: 1 },
+                    { text: "经常", weight: 2 },
+                    { text: "总是", weight: 3 }
+                ],
+                baseWeight: 1
+            },
+            {
+                text: "您是否害怕因为眼神问题而遭到他人的批评、嘲笑或排斥？",
+                options: [
+                    { text: "偶尔", weight: 1 },
+                    { text: "经常", weight: 2 },
+                    { text: "总是", weight: 3 }
+                ],
+                baseWeight: 1
+            },
+            {
+                text: "在与人交谈时，您是否会过度关注自己的眼神或表情是否正常？",
+                options: [
+                    { text: "偶尔", weight: 1 },
+                    { text: "经常", weight: 2 },
+                    { text: "总是", weight: 3 }
+                ],
+                baseWeight: 2
+            },
+            {
+                text: "你是否会思考自己的余光是否在看不该看的地方？",
+                options: [
+                    { text: "偶尔", weight: 1 },
+                    { text: "经常", weight: 2 },
+                    { text: "总是", weight: 3 }
+                ],
+                baseWeight: 1
+            },
+            {
+                text: "你是否对自己在社交场合中的眼神接触有较高标准？",
+                options: [
+                    { text: "没有", weight: 0 },
+                    { text: "偶尔", weight: 1 },
+                    { text: "经常", weight: 2 }
+                ],
+                baseWeight: 2
+            },
+            {
+                text: "当你的余光扫到别人时，是否会想到严重后果？",
+                options: [
+                    { text: "偶尔", weight: 1 },
+                    { text: "经常", weight: 2 },
+                    { text: "总是", weight: 3 }
+                ],
+                baseWeight: 2
+            },
+            {
+                text: "你是否容易注意到他人的微小动作，并认为是对你的负面反应？",
+                options: [
+                    { text: "偶尔", weight: 1 },
+                    { text: "经常", weight: 2 },
+                    { text: "总是", weight: 3 }
+                ],
+                baseWeight: 1
+            },
+            {
+                text: "你是否经常有意识地控制自己的视线方向？",
+                options: [
+                    { text: "偶尔", weight: 1 },
+                    { text: "经常", weight: 2 },
+                    { text: "总是", weight: 3 }
+                ],
+                baseWeight: 2
+            },
+            {
+                text: "你是否对被他人注视异常敏感？",
+                options: [
+                    { text: "偶尔", weight: 1 },
+                    { text: "经常", weight: 2 },
+                    { text: "总是", weight: 3 }
+                ],
+                baseWeight: 1
+            },
+            {
+                text: "你是否认为视野边缘扫到人或物是异常的？",
+                options: [
+                    { text: "偶尔", weight: 1 },
+                    { text: "经常", weight: 2 },
+                    { text: "总是", weight: 3 }
+                ],
+                baseWeight: 2
+            },
+            {
+                text: "你是否认为不恰当的余光必然导致灾难性后果？",
+                options: [
+                    { text: "偶尔", weight: 1 },
+                    { text: "经常", weight: 2 },
+                    { text: "总是", weight: 3 }
+                ],
+                baseWeight: 2
+            },
+            {
+                text: "你是否对身体焦虑感觉特别敏感？",
+                options: [
+                    { text: "偶尔", weight: 1 },
+                    { text: "经常", weight: 2 },
+                    { text: "总是", weight: 3 }
+                ],
+                baseWeight: 1
+            },
+            {
+                text: "你的直系亲属中是否有人被诊断过焦虑症、强迫症或抑郁症？",
+                options: [
+                    { text: "没有", weight: 0 },
+                    { text: "可能有", weight: 1 },
+                    { text: "有", weight: 2 }
+                ],
+                baseWeight: 2
+            },
+            {
+                text: "当你处于可能引发恐惧的情境时，身体有明显焦虑反应？",
+                options: [
+                    { text: "偶尔", weight: 1 },
+                    { text: "经常", weight: 2 },
+                    { text: "总是", weight: 3 }
+                ],
+                baseWeight: 1
+            },
+            {
+                text: "你是否曾经因为眼神问题遭到过嘲笑或排斥？",
+                options: [
+                    { text: "偶尔", weight: 1 },
+                    { text: "经常", weight: 2 },
+                    { text: "总是", weight: 3 }
+                ],
+                baseWeight: 1
+            },
+            {
+                text: "过去是否有过让你尴尬的经历，与视线有关？",
+                options: [
+                    { text: "偶尔", weight: 1 },
+                    { text: "经常", weight: 2 },
+                    { text: "总是", weight: 3 }
+                ],
+                baseWeight: 1
+            },
+            {
+                text: "在你成长的环境中，是否对社交礼仪要求非常苛刻？",
+                options: [
+                    { text: "偶尔", weight: 1 },
+                    { text: "经常", weight: 2 },
+                    { text: "总是", weight: 3 }
+                ],
+                baseWeight: 3
+            },
+            {
+                text: "你曾目睹他人因眼神或视线问题遭遇负面评价？",
+                options: [
+                    { text: "偶尔", weight: 1 },
+                    { text: "经常", weight: 2 },
+                    { text: "总是", weight: 3 }
+                ],
+                baseWeight: 1
+            },
+            {
+                text: "你是否经历过与视线相关的创伤性事件？",
+                options: [
+                    { text: "无", weight: 0 },
+                    { text: "轻度", weight: 3 },
+                    { text: "重度", weight: 5 }
+                ],
+                baseWeight: 4
+            },
+            {
+                text: "你是否为避免焦虑而避开人群密集的场所？",
+                options: [
+                    { text: "偶尔", weight: 1 },
+                    { text: "经常", weight: 2 },
+                    { text: "总是", weight: 3 }
+                ],
+                baseWeight: 2
+            },
+            {
+                text: "在与人交流时，你会刻意低头或看向别处？",
+                options: [
+                    { text: "偶尔", weight: 1 },
+                    { text: "经常", weight: 2 },
+                    { text: "总是", weight: 3 }
+                ],
+                baseWeight: 2
+            },
+            {
+                text: "在社交场合，你是否会采取安全措施如戴墨镜？",
+                options: [
+                    { text: "偶尔", weight: 1 },
+                    { text: "经常", weight: 2 },
+                    { text: "总是", weight: 3 }
+                ],
+                baseWeight: 2
+            },
+            {
+                text: "你是否感觉安全行为反而更引人注意？",
+                options: [
+                    { text: "偶尔", weight: 1 },
+                    { text: "经常", weight: 2 },
+                    { text: "总是", weight: 3 }
+                ],
+                baseWeight: 1
+            },
+            {
+                text: "你是否因担心余光问题而减少社交活动？",
+                options: [
+                    { text: "偶尔", weight: 1 },
+                    { text: "经常", weight: 2 },
+                    { text: "总是", weight: 3 }
+                ],
+                baseWeight: 3
+            },
+            {
+                text: "你所在环境对正确的眼神接触要求很高？",
+                options: [
+                    { text: "偶尔", weight: 1 },
+                    { text: "经常", weight: 2 },
+                    { text: "总是", weight: 3 }
+                ],
+                baseWeight: 1
+            },
+            {
+                text: "你是否担心自己的眼神行为不符合社交期望？",
+                options: [
+                    { text: "偶尔", weight: 1 },
+                    { text: "经常", weight: 2 },
+                    { text: "总是", weight: 3 }
+                ],
+                baseWeight: 1
+            },
+            {
+                text: "你目前正处在竞争激烈、评价严格的环境中？",
+                options: [
+                    { text: "否", weight: 0 },
+                    { text: "偶尔", weight: 1 },
+                    { text: "是", weight: 2 }
+                ],
+                baseWeight: 1
+            },
+            {
+                text: "你是否认为对余光问题的困扰核心是害怕负面评价？",
+                options: [
+                    { text: "偶尔", weight: 1 },
+                    { text: "经常", weight: 2 },
+                    { text: "总是", weight: 3 }
+                ],
+                baseWeight: 3
+            },
+            {
+                text: "你觉得余光扫到别人是无法挽回的糟糕事情？",
+                options: [
+                    { text: "偶尔", weight: 1 },
+                    { text: "经常", weight: 2 },
+                    { text: "总是", weight: 3 }
+                ],
+                baseWeight: 3
+            },
+            {
+                text: "这种对余光的担忧干扰了你的生活？",
+                options: [
+                    { text: "偶尔", weight: 1 },
+                    { text: "经常", weight: 2 },
+                    { text: "总是", weight: 3 }
+                ],
+                baseWeight: 4
+            },
+            {
+                text: "你的家族成员中有人性格特别固执？",
+                options: [
+                    { text: "偶尔", weight: 1 },
+                    { text: "经常", weight: 2 },
+                    { text: "特别突出", weight: 4 }
+                ],
+                baseWeight: 2
+            }
+        ];
+
+        // 状态变量
+        let currentQuestion = 0;
+        let answers = new Array(questions.length).fill(null);
+        let userData = {};
+        let paymentMethod = "wechat";
+        
+        // 初始化测试
+        function initTest() {
+            // 绑定开始测试按钮
+            document.getElementById('startTestBtn').addEventListener('click', startTest);
+            
+            // 绑定支付选项
+            document.querySelectorAll('.payment-option').forEach(option => {
+                option.addEventListener('click', () => {
+                    document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('selected'));
+                    option.classList.add('selected');
+                    paymentMethod = option.dataset.method;
+                });
+            });
+            
+            // 绑定支付按钮
+            document.getElementById('payBtn').addEventListener('click', processPayment);
+            
+            // 绑定测试按钮
+            document.getElementById('prevBtn').addEventListener('click', prevQuestion);
+            document.getElementById('nextBtn').addEventListener('click', nextQuestion);
+            
+            // 使用事件委托处理选项点击
+            document.getElementById('testContainer').addEventListener('click', function(e) {
+                if (e.target.classList.contains('option')) {
+                    const option = e.target;
+                    const options = option.parentNode.children;
+                    
+                    // 移除其他选项的选中状态
+                    for (let i = 0; i < options.length; i++) {
+                        options[i].classList.remove('selected');
+                    }
+                    
+                    // 添加当前选项的选中状态
+                    option.classList.add('selected');
+                    
+                    // 保存答案
+                    const index = parseInt(option.dataset.index);
+                    answers[currentQuestion] = index;
+                    
+                    // 启用下一题按钮
+                    document.getElementById('nextBtn').disabled = false;
+                }
+            });
+        }
+        
+        // 开始测试
+        function startTest() {
+            const nickname = document.getElementById('nickname').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const qq = document.getElementById('qq').value.trim();
+            
+            if (!nickname || !phone || !qq) {
+                showAlert('请填写所有个人信息');
+                return;
+            }
+            
+            // 验证手机号格式
+            const phoneRegex = /^1[3-9]\d{9}$/;
+            if (!phoneRegex.test(phone)) {
+                showAlert('请输入有效的手机号码');
+                return;
+            }
+            
+            // 验证QQ号格式
+            const qqRegex = /^[1-9]\d{4,10}$/;
+            if (!qqRegex.test(qq)) {
+                showAlert('请输入有效的QQ号码');
+                return;
+            }
+            
+            // 保存用户数据
+            userData = {
+                nickname,
+                phone,
+                qq,
+                startTime: new Date()
+            };
+            
+            // 隐藏表单，显示测试
+            document.getElementById('userForm').style.display = 'none';
+            document.getElementById('testContainer').style.display = 'block';
+            document.getElementById('testControls').style.display = 'flex';
+            
+            // 显示第一个问题
+            showQuestion(currentQuestion);
+            updateProgress();
+        }
+        
+        // 显示问题
+        function showQuestion(index) {
+            const q = questions[index];
+            const container = document.getElementById('testContainer');
+            
+            document.getElementById('currentQ').textContent = index + 1;
+            
+            let html = `
+                <div class="question">
+                    <h3>${index + 1}. ${q.text}</h3>
+                    <div class="options">
+            `;
+            
+            q.options.forEach((option, i) => {
+                const selected = answers[index] === i ? 'selected' : '';
+                html += `
+                    <div class="option ${selected}" data-index="${i}">
+                        ${option.text}
+                    </div>
+                `;
+            });
+            
+            html += `</div></div>`;
+            container.innerHTML = `<div class="question-counter">
+                <span class="info-icon">i</span>
+                第 <span id="currentQ">${index + 1}</span> 题 / 共 ${questions.length} 题
+            </div>` + html;
+            
+            // 更新按钮状态
+            document.getElementById('nextBtn').disabled = answers[index] === null;
+            document.getElementById('prevBtn').disabled = index === 0;
+            
+            // 更新按钮文本
+            document.getElementById('nextBtn').innerHTML = index === questions.length - 1 
+                ? '完成测试 <i class="fas fa-check"></i>' 
+                : '下一题 <i class="fas fa-arrow-right"></i>';
+        }
+        
+        // 显示提示信息
+        function showAlert(message) {
+            const alert = document.getElementById('alertMessage');
+            alert.textContent = message;
+            alert.style.display = 'block';
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 3000);
+        }
+        
+        // 更新进度条
+        function updateProgress() {
+            const answered = answers.filter(a => a !== null).length;
+            const progress = (answered / questions.length) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+        }
+        
+        // 上一题
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                showQuestion(currentQuestion);
+                updateProgress();
+            }
+        }
+        
+        // 下一题/提交
+        function nextQuestion() {
+            if (answers[currentQuestion] === null) {
+                showAlert('请选择答案');
+                return;
+            }
+            
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                showQuestion(currentQuestion);
+                updateProgress();
+            } else {
+                // 完成测试，显示支付页面
+                showPaymentPage();
+            }
+        }
+        
+        // 显示支付页面
+        function showPaymentPage() {
+            // 隐藏测试部分
+            document.getElementById('testContainer').style.display = 'none';
+            document.getElementById('testControls').style.display = 'none';
+            
+            // 显示支付部分
+            document.getElementById('payment').style.display = 'block';
+            
+            // 显示用户信息摘要
+            document.getElementById('summaryNickname').textContent = userData.nickname;
+            document.getElementById('summaryPhone').textContent = userData.phone;
+            document.getElementById('summaryQQ').textContent = userData.qq;
+        }
+        
+        // 处理支付
+        function processPayment() {
+            // 模拟支付处理
+            showAlert('支付处理中...');
+            
+            setTimeout(() => {
+                // 支付成功后显示结果
+                document.getElementById('payment').style.display = 'none';
+                document.getElementById('result').style.display = 'block';
+                
+                // 计算并显示结果
+                calculateResults();
+                
+                // 保存数据到服务器
+                saveResultsToServer();
+            }, 1500);
+        }
+        
+        // 计算得分和结果
+        function calculateResults() {
+            let totalScore = 0;
+            let traumaFlag = false;
+            
+            answers.forEach((ansIndex, qIndex) => {
+                if (ansIndex !== null) {
+                    const q = questions[qIndex];
+                    const option = q.options[ansIndex];
+                    totalScore += q.baseWeight * option.weight;
+                    
+                    // 检查创伤经历题
+                    if (qIndex === 18 && (ansIndex === 1 || ansIndex === 2)) {
+                        traumaFlag = true;
+                    }
+                }
+            });
+            
+            // 显示结果
+            document.getElementById('totalScore').textContent = totalScore;
+            
+            // 结果解读
+            let interpretation = '';
+            let recommendation = '';
+            
+            if (totalScore < 80) {
+                interpretation = '您的测试结果显示余光恐惧倾向较低，属于健康范围';
+                recommendation = '<p>继续保持健康的社交习惯，注意自我观察，如果有任何不适可以定期做自我评估。</p>';
+            } else if (totalScore < 140) {
+                interpretation = '您存在中度余光恐惧倾向，社交焦虑症状明显';
+                recommendation = `
+                    <p>建议关注情绪调节，学习放松技巧，可以尝试认知行为疗法(CBT)的自助材料。</p>
+                    <p>如果影响生活，建议寻求心理咨询。</p>
+                `;
+            } else if (totalScore < 200) {
+                interpretation = '您有明显的余光恐惧特征，社交焦虑症状严重';
+                recommendation = `
+                    <p>强烈推荐寻求专业心理帮助，认知行为疗法(CBT)对此类问题效果显著。</p>
+                    <p>同时可以配合正念训练和放松技巧。</p>
+                `;
+            } else {
+                interpretation = '您的测试结果显示非常严重的余光恐惧症状';
+                recommendation = `
+                    <p>强烈建议立即寻求专业精神科医生或心理治疗师的帮助。</p>
+                    <p>请尽快联系专业机构进行评估。</p>
+                `;
+            }
+            
+            // 添加创伤经历提示
+            if (traumaFlag) {
+                recommendation += `
+                    <div style="margin-top: 20px; padding: 15px; background: #fff8e1; border-radius: 10px;">
+                        <h3><i class="fas fa-exclamation-triangle"></i> 重要提示：</h3>
+                        <p>根据您的回答，您提到有与视线相关的创伤经历。创伤经历需要专业处理，强烈建议您寻求受过创伤治疗培训的心理治疗师的专业帮助。</p>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('interpretation').textContent = interpretation;
+            document.getElementById('recommendation').innerHTML = `<h3><i class="fas fa-lightbulb"></i> 专业建议：</h3>${recommendation}`;
+            
+            // 显示用户信息
+            document.getElementById('resultNickname').textContent = userData.nickname;
+            document.getElementById('resultPhone').textContent = userData.phone;
+            document.getElementById('resultQQ').textContent = userData.qq;
+            
+            // 显示详细分析报告
+            showDetailedAnalysis(totalScore);
+        }
+        
+        // 显示详细分析报告
+        function showDetailedAnalysis(totalScore) {
+            const analysisContainer = document.getElementById('detailedAnalysis');
+            let html = '';
+            
+            // 余光恐惧症成因分析
+            html += `
+                <div class="analysis-section">
+                    <h3><i class="fas fa-brain"></i> 余光恐惧症成因分析</h3>
+                    <p>余光恐惧症（也称为视线恐惧症）的形成原因通常是复杂的，往往是<strong>生理、心理、社会环境和认知因素</strong>相互作用的结果。它不是一种独立的诊断，而是更常见于社交焦虑症或强迫症等心理障碍中。</p>
+                    
+                    <p>以下是可能导致或加剧余光恐惧症的关键因素：</p>
+                    
+                    <h4><i class="fas fa-users"></i> 1. 社交焦虑的核心作用</h4>
+                    <ul class="therapy-steps">
+                        <li><strong>对负面评价的极度恐惧：</strong> 患者的核心恐惧在于担心自己的行为（尤其是无意识的视线移动）会被他人注意到、误解为不礼貌、怪异、有敌意甚至"变态"，从而招致批评、嘲笑或排斥。</li>
+                        <li><strong>过度自我关注：</strong> 在社交场合中，注意力过度集中在自身（"我看起来正常吗？"、"别人是不是在看我的眼睛？"、"我的余光是不是在看不该看的地方？"），而不是当下的互动或环境上。这种自我监控加剧了焦虑。</li>
+                        <li><strong>对社交表现的完美主义要求：</strong> 对自己在社交中的表现（包括眼神接触）设定过高的、不切实际的标准，任何微小的偏差（如余光扫到他人）都会引发强烈的焦虑和自我批评。</li>
+                    </ul>
+                    
+                    <h4><i class="fas fa-lightbulb"></i> 2. 认知偏差和错误解释</h4>
+                    <ul class="therapy-steps">
+                        <li><strong>灾难化思维：</strong> 将余光扫到他人（尤其是敏感部位或区域）解读为极其严重、不可挽回的后果（如"别人会认为我是变态"、"我会被当众羞辱"、"我会失去所有朋友"）。</li>
+                        <li><strong>过度解读他人的反应：</strong> 将他人的任何细微表情或动作（如皱眉、转头、调整姿势）都解读为是对自己"不当"余光的负面反应，即使这些反应完全无关。</li>
+                        <li><strong>注意力偏差：</strong> 过度警觉地监控自己的视线和周围人的视线方向，导致对"余光"和"被注视"的信号异常敏感。</li>
+                        <li><strong>对正常生理现象的误解：</strong> 将人类视野中自然存在的余光范围（周边视野）及其不可避免的移动（这是眼球和大脑处理视觉信息的正常方式）误解为是异常的、有问题的或受自己控制的。</li>
+                    </ul>
+                    
+                    <h4><i class="fas fa-dna"></i> 3. 神经生物学因素</h4>
+                    <ul class="therapy-steps">
+                        <li><strong>焦虑敏感性高：</strong> 个体天生对焦虑的身体感觉（如心跳加速、出汗）更敏感，更容易将这些感觉解释为危险的信号。</li>
+                        <li><strong>大脑杏仁核过度活跃：</strong> 大脑中负责处理恐惧和威胁信号的区域（杏仁核）可能过度活跃，导致对社交威胁（如他人的目光）反应过度。</li>
+                        <li><strong>遗传易感性：</strong> 焦虑障碍家族史可能增加个体患社交焦虑及相关症状（如余光恐惧）的风险。</li>
+                    </ul>
+                    
+                    <h4><i class="fas fa-book"></i> 4. 学习经历和早期经历</h4>
+                    <ul class="therapy-steps">
+                        <li><strong>负面的社交经历：</strong> 过去曾因眼神接触问题（如被指责"眼神飘忽"、"不礼貌地盯着看"或"偷看"）而遭受嘲笑、批评、惩罚或排斥，会强化对视线管理的焦虑。</li>
+                        <li><strong>观察学习：</strong> 目睹他人因类似问题遭遇负面评价，或者成长环境中对社交礼仪（尤其是眼神接触）要求极为严格甚至苛刻。</li>
+                        <li><strong>创伤经历：</strong> 在某些情况下，与视线或身体暴露相关的创伤经历也可能成为诱因。</li>
+                    </ul>
+                    
+                    <h4><i class="fas fa-running"></i> 5. 行为因素</h4>
+                    <ul class="therapy-steps">
+                        <li><strong>回避行为：</strong> 为了避免余光恐惧带来的强烈焦虑，患者会采取各种回避行为（如避免去人多的地方、避免乘坐公共交通工具、与人交流时低头或侧身、强迫自己死死盯着某个"安全"点）。虽然短期内能缓解焦虑，但长期来看会维持和加剧恐惧。</li>
+                        <li><strong>安全行为：</strong> 在无法回避时，会采取一些让自己感觉"安全"但实际可能更引人注目的行为（如用手遮挡视线、戴墨镜、刻意将头扭向夸张的角度、反复道歉或解释），这些行为反而可能吸引不必要的注意，强化了"我的视线有问题"的信念。</li>
+                    </ul>
+                </div>
+            `;
+            
+            // 根据得分显示不同的指导建议
+            if (totalScore < 80) {
+                html += `
+                    <div class="analysis-section">
+                        <h3><i class="fas fa-hands-helping"></i> 轻度余光恐惧指导建议</h3>
+                        <p>针对您的轻度症状，以下建议可以帮助您更好地管理：</p>
+                        
+                        <h4><i class="fas fa-eye"></i> 余光管理技巧</h4>
+                        <ul class="therapy-steps">
+                            <li><strong>接受正常性：</strong> 认识到余光的存在是正常生理现象，不必过度关注</li>
+                            <li><strong>视线焦点训练：</strong> 练习将视线焦点放在谈话对象的脸部三角区（眼睛和鼻子之间）</li>
+                            <li><strong>环境适应：</strong> 逐渐增加在公共场合的停留时间，从短时间开始</li>
+                        </ul>
+                        
+                        <h4><i class="fas fa-book-open"></i> 推荐自助书籍</h4>
+                        <div class="book-recommendation">
+                            <div class="book-card">
+                                <div class="book-title">《应对焦虑》</div>
+                                <div class="book-author">埃德蒙·伯恩</div>
+                                <div class="book-desc">提供多种应对焦虑的实用方法，包括放松技巧和认知重构策略。</div>
+                            </div>
+                            <div class="book-card">
+                                <div class="book-title">《焦虑自救手册》</div>
+                                <div class="book-author">蒂姆·坎托弗</div>
+                                <div class="book-desc">介绍认知行为疗法(CBT)的自助方法，适合轻度焦虑人群。</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (totalScore < 140) {
+                html += `
+                    <div class="analysis-section">
+                        <h3><i class="fas fa-hands-helping"></i> 中度余光恐惧指导建议</h3>
+                        <p>针对您的中度症状，以下建议可以帮助您更好地管理：</p>
+                        
+                        <h4><i class="fas fa-eye"></i> 行为疗法建议</h4>
+                        <ul class="therapy-steps">
+                            <li><strong>暴露疗法：</strong> 逐步暴露于引起焦虑的情境，从低压力环境开始</li>
+                            <li><strong>认知重构：</strong> 识别和挑战灾难化思维，建立更合理的信念</li>
+                            <li><strong>注意力训练：</strong> 练习将注意力从自身转移到外部环境和谈话内容</li>
+                            <li><strong>放松训练：</strong> 学习深呼吸、渐进式肌肉放松等技巧</li>
+                        </ul>
+                        
+                        <h4><i class="fas fa-book-open"></i> 推荐自助书籍</h4>
+                        <div class="book-recommendation">
+                            <div class="book-card">
+                                <div class="book-title">《想法决定活法：CBT改变生活的10大路径》</div>
+                                <div class="book-author">丹尼斯·格林伯格</div>
+                                <div class="book-desc">提供认知行为疗法的实用指南，帮助改变负面思维模式。</div>
+                            </div>
+                            <div class="book-card">
+                                <div class="book-title">《自觉与领悟之路》</div>
+                                <div class="book-author">森田正马</div>
+                                <div class="book-desc">介绍森田疗法，强调接受症状、为所当为的理念。</div>
+                            </div>
+                            <div class="book-card">
+                                <div class="book-title">《认知行为疗法》</div>
+                                <div class="book-author">朱迪·贝克</div>
+                                <div class="book-desc">CBT创始人著作，深入讲解认知行为疗法原理和应用。</div>
+                            </div>
+                            <div class="book-card">
+                                <div class="book-title">《克服社交焦虑》</div>
+                                <div class="book-author">埃伦·亨德里克森</div>
+                                <div class="book-desc">专门针对社交焦虑的自助指南，包含实用练习和策略。</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                html += `
+                    <div class="analysis-section">
+                        <h3><i class="fas fa-hands-helping"></i> 重度余光恐惧指导建议</h3>
+                        <p>针对您的严重症状，强烈建议寻求专业帮助：</p>
+                        
+                        <h4><i class="fas fa-user-md"></i> 专业治疗建议</h4>
+                        <ul class="therapy-steps">
+                            <li><strong>认知行为疗法(CBT)：</strong> 最有效的治疗方法，帮助识别和改变负面思维模式</li>
+                            <li><strong>暴露与反应预防(ERP)：</strong> 特别适用于强迫症相关的视线恐惧</li>
+                            <li><strong>团体治疗：</strong> 在安全环境中练习社交技能，获得同伴支持</li>
+                            <li><strong>药物治疗：</strong> 在医生指导下，SSRIs类药物可能有助于缓解焦虑症状</li>
+                            <li><strong>正念疗法：</strong> 学习不评判地观察自己的思维和感受</li>
+                        </ul>
+                        
+                        <h4><i class="fas fa-book-open"></i> 推荐专业书籍</h4>
+                        <div class="book-recommendation">
+                            <div class="book-card">
+                                <div class="book-title">《焦虑症与恐惧症手册》</div>
+                                <div class="book-author">艾德蒙·伯恩</div>
+                                <div class="book-desc">全面介绍各类焦虑症的治疗方法，包含详细的自助计划。</div>
+                            </div>
+                            <div class="book-card">
+                                <div class="book-title">《走出强迫的泥潭》</div>
+                                <div class="book-author">东振明</div>
+                                <div class="book-desc">针对强迫症及相关问题的认知行为疗法指南。</div>
+                            </div>
+                            <div class="book-card">
+                                <div class="book-title">《正念禅修》</div>
+                                <div class="book-author">马克·威廉姆斯</div>
+                                <div class="book-desc">教授正念冥想技巧，帮助管理焦虑和压力。</div>
+                            </div>
+                            <div class="book-card">
+                                <div class="book-title">《创伤与复原》</div>
+                                <div class="book-author">朱迪思·赫尔曼</div>
+                                <div class="book-desc">针对有创伤经历的患者，提供专业治疗指导。</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            analysisContainer.innerHTML = html;
+        }
+        
+        // 保存结果到服务器（模拟）
+        function saveResultsToServer() {
+            // 模拟发送数据到服务器
+            const resultData = {
+                userData,
+                answers,
+                totalScore: document.getElementById('totalScore').textContent,
+                interpretation: document.getElementById('interpretation').textContent,
+                paymentMethod,
+                timestamp: new Date()
+            };
+            
+            console.log("数据已保存到服务器:", resultData);
+        }
+        
+        // 初始化
+        window.onload = initTest;
+    </script>
+</body>
+</html>
+
